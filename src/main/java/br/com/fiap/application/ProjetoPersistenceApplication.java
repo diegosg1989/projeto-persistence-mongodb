@@ -1,5 +1,8 @@
 package br.com.fiap.application;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +12,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import br.com.fiap.entity.Cliente;
+import br.com.fiap.entity.Endereco;
+import br.com.fiap.entity.Pedido;
+import br.com.fiap.entity.Produto;
 import br.com.fiap.repository.ClienteRepository;
 
 @SpringBootApplication
@@ -26,9 +32,41 @@ public class ProjetoPersistenceApplication  implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		/**
+		 * Salvando os produtos
+		 */
+		Produto produto1 = new Produto("Codigo 1", "Produto 1", "5", "120.00");
+		Produto produto2 = new Produto("Codigo 2", "Produto 2", "10", "20.00");
+		Produto produto3 = new Produto("Codigo 3", "Produto 3", "50", "5.00");
 		
-		Cliente cliente = new Cliente("123456789", "teste", null, null, null, null, null, null, null);
+		Set<Produto> produtos = new HashSet<>();
+		produtos.add(produto1);
+		produtos.add(produto2);
+		produtos.add(produto3);
+		
+		/**
+		 * Salvando os pedidos
+		 */
+		Pedido pedido1 = new Pedido("Pedido 1", "Codigo 12", produtos);
+		
+		Set<Pedido> pedidos = new HashSet<>();
+		pedidos.add(pedido1);
+		
+		/**
+		 * Salvando endereço
+		 */
+		Endereco endereco1 = new Endereco("Rua 1", "Bairro 1", "numero 1", "Cidade 1", "Estado 1", "CEP 1", "Pais 1");
+		Endereco endereco2 = new Endereco("Rua 2", "Bairro 2", "numero 2", "Cidade 2", "Estado 2", "CEP 2", "Pais 2");
+		
+		Set<Endereco> enderecos = new HashSet<>();
+		enderecos.add(endereco1);
+		enderecos.add(endereco2);
+		
+		/**
+		 * Salvando cliente
+		 */
+		Cliente cliente = new Cliente("CPF 1", "Nome 1", enderecos, pedidos);
 		clienteRepository.save(cliente);
-		
 	}
 }
