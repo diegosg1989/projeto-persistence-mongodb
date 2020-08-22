@@ -1,5 +1,6 @@
 package br.com.fiap.application;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,6 +17,8 @@ import br.com.fiap.entity.Endereco;
 import br.com.fiap.entity.Pedido;
 import br.com.fiap.entity.Produto;
 import br.com.fiap.repository.ClienteRepository;
+import br.com.fiap.repository.PedidoRepository;
+import br.com.fiap.repository.ProdutoRepository;
 
 @SpringBootApplication
 @EnableMongoRepositories(basePackages={"br.com.fiap.repository"})
@@ -23,6 +26,13 @@ import br.com.fiap.repository.ClienteRepository;
 @ComponentScan(basePackages={"br.com.fiap.service"})
 public class ProjetoPersistenceApplication  implements CommandLineRunner {
 
+	@Autowired
+	private ProdutoRepository produtoRepository;
+	
+	@Autowired
+	private PedidoRepository pedidoRepository;
+	
+	
 	@Autowired
 	private ClienteRepository clienteRepository;
 	
@@ -32,26 +42,6 @@ public class ProjetoPersistenceApplication  implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-
-		/**
-		 * Salvando os produtos
-		 */
-		Produto produto1 = new Produto("Codigo 1", "Produto 1", "5", "120.00");
-		Produto produto2 = new Produto("Codigo 2", "Produto 2", "10", "20.00");
-		Produto produto3 = new Produto("Codigo 3", "Produto 3", "50", "5.00");
-		
-		Set<Produto> produtos = new HashSet<>();
-		produtos.add(produto1);
-		produtos.add(produto2);
-		produtos.add(produto3);
-		
-		/**
-		 * Salvando os pedidos
-		 */
-		Pedido pedido1 = new Pedido("Pedido 1", "Codigo 12", produtos);
-		
-		Set<Pedido> pedidos = new HashSet<>();
-		pedidos.add(pedido1);
 		
 		/**
 		 * Salvando endereço
@@ -63,10 +53,35 @@ public class ProjetoPersistenceApplication  implements CommandLineRunner {
 		enderecos.add(endereco1);
 		enderecos.add(endereco2);
 		
+		
 		/**
 		 * Salvando cliente
 		 */
-		Cliente cliente = new Cliente("CPF 1", "Nome 1", enderecos, pedidos);
+		Cliente cliente = new Cliente("CPF 1", "Nome 1", enderecos);
 		clienteRepository.save(cliente);
+		
+		
+		/**
+		 * Salvando os produtos
+		 */
+		Produto produto1 = new Produto("Codigo 1", "Produto 1", "5", "120.00");
+		Produto produto2 = new Produto("Codigo 2", "Produto 2", "10", "20.00");
+		Produto produto3 = new Produto("Codigo 3", "Produto 3", "50", "5.00");
+		produtoRepository.saveAll(Arrays.asList(produto1, produto2, produto3));
+		
+		Set<Produto> produtos = new HashSet<>();
+		produtos.add(produto1);
+		produtos.add(produto2);
+		produtos.add(produto3);
+		
+		/**
+		 * Salvando os pedidos
+		 */
+		Pedido pedido1 = new Pedido("Pedido 1", "Codigo 12", produtos, cliente);
+		pedidoRepository.saveAll(Arrays.asList(pedido1));
+		
+		Set<Pedido> pedidos = new HashSet<>();
+		pedidos.add(pedido1);
+
 	}
 }

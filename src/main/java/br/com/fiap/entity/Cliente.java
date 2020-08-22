@@ -35,12 +35,9 @@ public class Cliente {
 	
 	private Set<Endereco> endereco = new HashSet<>();
 	
-	private Set<Pedido> pedidos = new HashSet<>();
-
-	public Cliente(String cpf, String nome, Set<Endereco> endereco, Set<Pedido> pedidos) {
+	public Cliente(String cpf, String nome, Set<Endereco> endereco) {
 		this.cpf = cpf;
 		this.nome = nome;
 		this.endereco = endereco;
-		this.pedidos = pedidos;
 	}
 }

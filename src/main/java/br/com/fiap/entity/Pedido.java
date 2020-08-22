@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.mongodb.lang.NonNull;
@@ -18,6 +19,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Document("pedido")
 public class Pedido {
 
 	@Id
@@ -31,12 +33,17 @@ public class Pedido {
 	@Indexed(unique=true)
 	@NonNull
 	private String codigo;
+	
+	@Field(name = "CLIENTE")
+	@NonNull
+	private Cliente cliente;
 
 	Set<Produto> produto = new HashSet<>();
 	
-	public Pedido(String desc, String codigo, Set<Produto> produto) {
+	public Pedido(String desc, String codigo, Set<Produto> produto, Cliente cliente) {
 		this.desc = desc;
 		this.codigo = codigo;
 		this.produto = produto;
+		this.cliente = cliente;
 	}
 }

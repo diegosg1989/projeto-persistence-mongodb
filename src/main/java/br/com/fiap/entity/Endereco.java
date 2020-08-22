@@ -1,6 +1,7 @@
 package br.com.fiap.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.mongodb.lang.NonNull;
@@ -14,6 +15,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @EqualsAndHashCode
+@Document("endereco")
 public class Endereco {
 
 	@Id
