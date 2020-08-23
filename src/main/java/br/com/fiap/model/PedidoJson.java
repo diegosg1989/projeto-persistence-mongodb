@@ -6,6 +6,15 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 public class PedidoJson {
 	
 	@JsonProperty("codigo")
@@ -23,37 +32,4 @@ public class PedidoJson {
 	@JsonProperty("produtos")
 	@NotBlank(message = "Produtos são obrigatórios")
 	List<ProdutoJson> produtos;
-
-	public String getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(String codigo) {
-		this.codigo = codigo;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
-
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-
-	public List<ProdutoJson> getProdutos() {
-		return produtos;
-	}
-
-	public void setProdutos(List<ProdutoJson> produtos) {
-		this.produtos = produtos;
-	}
-
 }

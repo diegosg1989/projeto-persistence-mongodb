@@ -1,10 +1,10 @@
 package br.com.fiap.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -50,6 +50,9 @@ public class PedidoService {
 	@ResponseBody
 	public ResponseEntity<String> add(@Valid @RequestBody Map<String, Object> payload) {
 
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
+		
 		try {
 
 			ObjectMapper mapper = new ObjectMapper();
@@ -57,24 +60,33 @@ public class PedidoService {
 			
 			Cliente cliente = clienteRepository.findByCpf(pedidoJson.getCpf());
 			
-			Set<Produto> produtos = pedidoJson.getProdutos().stream().map(produto -> {
-				return produtoRepository.findByCodigo(produto.getCodigo());
-			}).collect(Collectors.toSet());
+			if(cliente == null) {
+				String body = "{\"Mensagem\":\"Cliente não encontrado na base de dados\"}";
+				return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
+			}
+			
+			Set<Produto> produtos = new HashSet<Produto>();
+			
+			for (ProdutoJson produtoJson : pedidoJson.getProdutos()) {
+				
+				Produto produto = produtoRepository.findByCodigo(produtoJson.getCodigo());
+				
+				if(produto == null) {
+					String body = "{\"Mensagem\":\"Produto "+produtoJson.getCodigo()+" nao existe na base de dados\"}";
+					return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
+				}
+				
+				produtos.add(produto);
+			}
 			
 			Pedido pedido = new Pedido(pedidoJson.getDescricao(), pedidoJson.getCodigo(), produtos, cliente);
 			pedidoRepository.save(pedido);
-			
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
-			String body = "{\"Mensagem\":\"Pedido adicionado com sucesso\"}";
 
+			String body = "{\"Mensagem\":\"Pedido adicionado com sucesso\"}";
 			return new ResponseEntity<>(body, headers, HttpStatus.CREATED);
 
 		} catch (Exception e) {
-			HttpHeaders headers = new HttpHeaders();
-			headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 			String body = "{\"Mensagem\":\"Ocorreu um erro\", \"Execeção\":" + e.getMessage() + "}";
-
 			return new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
 		}
 	}
