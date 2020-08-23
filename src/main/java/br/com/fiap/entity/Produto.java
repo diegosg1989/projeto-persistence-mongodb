@@ -29,7 +29,7 @@ public class Produto {
 	private String codigo;
 
 	@Field(name = "DESCRICAO")
-	private String desc;
+	private String descricao;
 
 	@Field(name = "QUANTIDADE")
 	private String quantidadeEstoque;
@@ -37,9 +37,9 @@ public class Produto {
 	@Field(name = "PRECO")
 	private String preco;
 
-	public Produto(String codigo, String desc, String quantidadeEstoque, String preco) {
+	public Produto(String codigo, String descricao, String quantidadeEstoque, String preco) {
 		this.codigo = codigo;
-		this.desc = desc;
+		this.descricao = descricao;
 		this.quantidadeEstoque = quantidadeEstoque;
 		this.preco = preco;
 	}

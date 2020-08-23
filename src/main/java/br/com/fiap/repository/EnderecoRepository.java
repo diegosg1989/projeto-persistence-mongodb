@@ -8,14 +8,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import br.com.fiap.entity.Cliente;
+import br.com.fiap.entity.Endereco;
 
 @Repository
-public interface ClienteRepository extends CrudRepository<Cliente, Integer> {
+public interface EnderecoRepository extends CrudRepository<Endereco, Integer> {
 
-	@Query(value = "{ 'cpf': ?0 }")
-	public Cliente findByCpf(@Param("cpf") String cpf);
-	
-	@Query("select c from Cliente c where c.nome = :nome")
-	public List<Cliente> findByName(@Param("nome") String nome);
-	
+	@Query("select e from Endereco e where e.cep = :cep")
+	public List<Cliente> findByCep(@Param("cep") String cep);
 }

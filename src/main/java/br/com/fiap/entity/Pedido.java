@@ -27,7 +27,7 @@ public class Pedido {
 	private String pedidoId;
 	
 	@Field(name = "DESCRICAO")
-	private String desc;
+	private String descricao;
 
 	@Field(name = "CODIGO")
 	@Indexed(unique=true)
@@ -40,8 +40,8 @@ public class Pedido {
 
 	Set<Produto> produto = new HashSet<>();
 	
-	public Pedido(String desc, String codigo, Set<Produto> produto, Cliente cliente) {
-		this.desc = desc;
+	public Pedido(String descricao, String codigo, Set<Produto> produto, Cliente cliente) {
+		this.descricao = descricao;
 		this.codigo = codigo;
 		this.produto = produto;
 		this.cliente = cliente;
