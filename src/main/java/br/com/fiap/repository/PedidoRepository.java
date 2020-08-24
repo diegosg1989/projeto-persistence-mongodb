@@ -13,10 +13,13 @@ import br.com.fiap.entity.Pedido;
 @Repository
 public interface PedidoRepository extends CrudRepository<Pedido, Integer>{
 
-	@Query("select p from Pedido p where p.cliente = :idcliente")
-	public List<Pedido> findAllOrdersOfACostumer(@Param("idcliente") Cliente idcliente);
+	@Query(value = "{ 'codigo': ?0 }")
+	public Pedido findByCodigo(@Param("codigo") String codigo);
 	
-	@Query("select p from Pedido p where p.codigo = :codigo")
-	public List<Pedido> findOrderByCode(@Param("codigo") String codigo);
+	@Query(value = "{ 'codigo': ?0 }")
+	public List<Pedido> findOrderByCode(@Param("codigo") String codigo);	
+	
+	@Query(value = "{ 'cliente': ?0 }")
+	public List<Pedido> findAllOrdersOfACostumer(@Param("cliente") Cliente idcliente);
 	
 }

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -58,15 +59,13 @@ public class PedidoService {
 			ObjectMapper mapper = new ObjectMapper();
 			PedidoJson pedidoJson = mapper.convertValue(payload, PedidoJson.class);
 			
-			Cliente cliente = clienteRepository.findByCpf(pedidoJson.getCpf());
-			
+			Cliente cliente = clienteRepository.findByCpf(pedidoJson.getCpf());			
 			if(cliente == null) {
 				String body = "{\"Mensagem\":\"Cliente não encontrado na base de dados\"}";
 				return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
 			}
 			
-			Set<Produto> produtos = new HashSet<Produto>();
-			
+			Set<Produto> produtos = new HashSet<Produto>();			
 			for (ProdutoJson produtoJson : pedidoJson.getProdutos()) {
 				
 				Produto produto = produtoRepository.findByCodigo(produtoJson.getCodigo());
@@ -75,9 +74,14 @@ public class PedidoService {
 					String body = "{\"Mensagem\":\"Produto "+produtoJson.getCodigo()+" nao existe na base de dados\"}";
 					return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
 				}
-				
 				produtos.add(produto);
 			}
+			
+			Pedido pedidoBase = pedidoRepository.findByCodigo(pedidoJson.getCodigo());
+			if(pedidoBase != null) {
+				String body = "{\"Mensagem\":\"Ja existe um pedido para o codigo desejado\"}";
+				return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
+			}			
 			
 			Pedido pedido = new Pedido(pedidoJson.getDescricao(), pedidoJson.getCodigo(), produtos, cliente);
 			pedidoRepository.save(pedido);
@@ -97,59 +101,15 @@ public class PedidoService {
 	public Iterable<Pedido> getAllUsers() {
 		return pedidoRepository.findAll();
 	}
-
-	@Transactional(readOnly = true)
-	@RequestMapping(path = "/cliente/{cpf}", method = RequestMethod.GET)
-	@ResponseBody
-	public ResponseEntity<List<PedidoJson>> findAllOrdersOfACostumer(@PathVariable String cpf) {
-		
-		Cliente cliente = clienteRepository.findByCpf(cpf);
-		
-		List<Pedido> pedidos = pedidoRepository.findAllOrdersOfACostumer(cliente);
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
-		
-		List<PedidoJson> pedidosJson = new ArrayList<>();
-	    for (Pedido pedido : pedidos) {
-	        PedidoJson pedidoJson = new PedidoJson();
-	        pedidoJson.setCodigo(pedido.getCodigo());
-	        pedidoJson.setDescricao(pedido.getDescricao());
-	        pedidoJson.setCpf(pedido.getCliente().getCpf());
-	        
-	        List<ProdutoJson> produtosJson = new ArrayList<>();
-	        
-//	        pedido.getItens().forEach(item -> {
-//	        	Produto produto = item.getProdutoPk();
-//	        	ProdutoJson produtoJson = new ProdutoJson();
-//	        	
-//	        	produtoJson.setCodigo(produto.getCodigo());
-//	        	produtoJson.setDescricao(produto.getDesc());
-//	        	produtoJson.setPreco(produto.getPreco());
-//	        	produtoJson.setQuantidade(item.getQuantidade());
-//	        	
-//	        	produtosJson.add(produtoJson);
-//	        	
-//	        });
-	        
-	        pedidoJson.setProdutos(produtosJson);
-	        pedidosJson.add(pedidoJson);
-	    }
-		
-		return new ResponseEntity<>(pedidosJson, headers, HttpStatus.OK);
-	}
-	
-
 	
 	@Transactional(readOnly = true)
 	@RequestMapping(path = "/codigo/{codigo}", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> findOrderByCode(@PathVariable String codigo) {
 		
-		Pedido pedido = pedidoRepository.findOrderByCode(codigo).get(0);
+		Pedido pedido = pedidoRepository.findByCodigo(codigo);
 		
-		PedidoJson pedidoJson = new PedidoJson();
-		
+		PedidoJson pedidoJson = new PedidoJson();		
 		pedidoJson.setCodigo(pedido.getCodigo());
 		pedidoJson.setDescricao(pedido.getDescricao());
 		pedidoJson.setCpf(pedido.getCliente().getCpf());
@@ -163,6 +123,42 @@ public class PedidoService {
 					+ "}";
 
 		return new ResponseEntity<>(body, headers, HttpStatus.OK);
+	}
+	
+	@Transactional(readOnly = true)
+	@RequestMapping(path = "/cliente/{cpf}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<List<PedidoJson>> findAllOrdersOfACostumer(@PathVariable String cpf) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 		
+		Cliente cliente = clienteRepository.findByCpf(cpf);
+		
+		List<Pedido> pedidos = pedidoRepository.findAllOrdersOfACostumer(cliente);
+		
+		List<PedidoJson> pedidosJson = new ArrayList<>();
+		
+	    for (Pedido pedido : pedidos) {
+	    	
+	        PedidoJson pedidoJson = new PedidoJson();
+	        pedidoJson.setCodigo(pedido.getCodigo());
+	        pedidoJson.setDescricao(pedido.getDescricao());
+	        pedidoJson.setCpf(pedido.getCliente().getCpf());
+	        
+	        List<ProdutoJson> produtosJson = pedido.getProduto().stream().map(produto -> {
+	        	ProdutoJson produtoJson = new ProdutoJson();
+	        	produtoJson.setCodigo(produto.getCodigo());
+	        	produtoJson.setDescricao(produto.getDescricao());
+	        	produtoJson.setPreco(produto.getPreco());
+	        	produtoJson.setQuantidade(produto.getQuantidadeEstoque());
+	        	return produtoJson;
+	        }).collect(Collectors.toList());
+	        
+	        pedidoJson.setProdutos(produtosJson);
+	        pedidosJson.add(pedidoJson);
+	    }
+		
+		return new ResponseEntity<>(pedidosJson, headers, HttpStatus.OK);
 	}
 }
