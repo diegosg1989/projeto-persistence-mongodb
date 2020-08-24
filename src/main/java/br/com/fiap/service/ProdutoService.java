@@ -49,7 +49,7 @@ public class ProdutoService {
 				return new ResponseEntity<>(body, headers, HttpStatus.ALREADY_REPORTED);
 			}
 			
-			Produto produto = new Produto(produtoJson.getCodigo(), produtoJson.getDescricao(), produtoJson.getPreco(), produtoJson.getQuantidade());
+			Produto produto = new Produto(produtoJson.getCodigo(), produtoJson.getDescricao(), produtoJson.getQuantidade(), produtoJson.getPreco());
 			produtoRepository.save(produto);
 
 			String body = "{\"Mensagem\":\"Produto adicionado com sucesso\"}";
