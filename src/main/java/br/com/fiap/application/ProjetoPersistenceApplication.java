@@ -1,23 +1,13 @@
 package br.com.fiap.application;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import br.com.fiap.entity.Cliente;
-import br.com.fiap.entity.Endereco;
-import br.com.fiap.entity.Pedido;
-import br.com.fiap.entity.Produto;
 import br.com.fiap.repository.ClienteRepository;
-import br.com.fiap.repository.EnderecoRepository;
 import br.com.fiap.repository.PedidoRepository;
 import br.com.fiap.repository.ProdutoRepository;
 
@@ -35,10 +25,6 @@ public class ProjetoPersistenceApplication{
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
-	@Autowired
-	private EnderecoRepository enderecoRepository;
-	
 	
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetoPersistenceApplication.class, args);

@@ -17,10 +17,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 @Document("endereco")
 public class Endereco {
-
-	@Id
-	@NonNull
-	private String enderecoId;
 	
 	@Field(name = "RUA")
 	private String rua;

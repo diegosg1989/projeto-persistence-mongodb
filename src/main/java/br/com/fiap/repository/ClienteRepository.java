@@ -15,7 +15,6 @@ public interface ClienteRepository extends CrudRepository<Cliente, Integer> {
 	@Query(value = "{ 'cpf': ?0 }")
 	public Cliente findByCpf(@Param("cpf") String cpf);
 	
-	@Query("select c from Cliente c where c.nome = :nome")
+	@Query(value = "{ 'nome': ?0 }")
 	public List<Cliente> findByName(@Param("nome") String nome);
-	
 }
